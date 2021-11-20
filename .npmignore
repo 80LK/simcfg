@@ -1,0 +1,5 @@
+src
+tsconfig.json
+test.json
+dist/test.js
+dist/test.d.ts

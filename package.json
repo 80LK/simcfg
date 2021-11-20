@@ -1,0 +1,30 @@
+{
+  "name": "config-parser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "config",
+    "json",
+    "yaml"
+  ],
+  "author": "80LK",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^16.11.9",
+    "typescript": "^4.5.2",
+    "yaml": "^1.10.2"
+  },
+  "peerDependencies": {
+    "yaml": "^1.10.2"
+  },
+  "peerDependenciesMeta": {
+    "yaml": {
+      "optional": true
+    }
+  }
+}
