@@ -53,7 +53,7 @@ class JSONStrategy extends Strategy {
 	}
 
 	public stringify(raw: Object): string {
-		return JSON.stringify(raw);
+		return JSON.stringify(raw, null, '\t');
 	}
 }
 
