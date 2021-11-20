@@ -1,5 +1,6 @@
 src
 tsconfig.json
 test.json
+test.yml
 dist/test.js
 dist/test.d.ts
