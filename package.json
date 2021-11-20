@@ -1,5 +1,5 @@
 {
-  "name": "simple-config",
+  "name": "simcfg",
   "version": "1.0.0",
   "description": "A simple module for managing configuration files",
   "main": "dist/index.js",
