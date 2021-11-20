@@ -6,9 +6,13 @@ class YAMLStrategy extends JSONStrategy {
 		let obj = YAML.parse(raw.toString());
 
 		if (typeof obj == "object" && !Array.isArray(obj))
-			obj = this.parseObj(obj)
+			obj = this.parseObj(obj);
 
 		return obj;
+	}
+
+	public stringify(raw: Object): string {
+		return YAML.stringify(raw);
 	}
 }
 

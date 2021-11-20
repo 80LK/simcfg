@@ -51,6 +51,10 @@ class JSONStrategy extends Strategy {
 
 		return obj;
 	}
+
+	public stringify(raw: Object): string {
+		return JSON.stringify(raw);
+	}
 }
 
 export default JSONStrategy;

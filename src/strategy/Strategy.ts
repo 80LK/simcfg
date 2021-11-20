@@ -33,6 +33,7 @@ abstract class Strategy {
 
 
 	public abstract parse(raw: string | Buffer): Object;
+	public abstract stringify(raw: Object): string
 }
 
 export default Strategy;

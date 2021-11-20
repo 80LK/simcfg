@@ -1,10 +1,10 @@
-import { readFileSync, promises } from 'fs';
-const { readFile } = promises;
+import { readFileSync, promises, writeFileSync } from 'fs';
+const { readFile, writeFile } = promises;
 
 import Strategy from './strategy/Strategy.js';
 
 export default class Config {
-	private constructor(private config: NodeJS.Dict<any> = {}, private immutable: Boolean = false) {
+	private constructor(private config: NodeJS.Dict<any> = {}, private immutable: Boolean = false, private readonly path?: string) {
 		for (const key in config) {
 			const value = config[key];
 
@@ -12,6 +12,16 @@ export default class Config {
 				config[key] = new Config(value, immutable);
 			}
 		}
+	}
+
+	private toObject() {
+		const config = this.config;
+		const res = {}
+		for (const key in config) {
+			const value = config[key];
+			res[key] = (value instanceof Config) ? value.toObject() : value;
+		}
+		return res;
 	}
 
 	public get<T = any>(key: string, defaultValue?: T): T {
@@ -65,15 +75,32 @@ export default class Config {
 		return this.immutable;
 	}
 
-	public static async parseFromFile(file: string, immutable: Boolean = false): Promise<Config> {
-		const strategy = (strategy => new strategy())(Strategy.getStrategy(file));
-
-		return new Config(strategy.parse(await readFile(file)), immutable);
+	public writeFile(path?: string) {
+		if (!path) path = this.path;
+		const source = this.stringify(path);
+		return writeFile(path, source);
+	}
+	public writeFileSync(path?: string) {
+		if (!path) path = this.path;
+		const source = this.stringify(path);
+		writeFileSync(path, source);
+	}
+	private stringify(path: string) {
+		const strategy = (strategy => new strategy())(Strategy.getStrategy(path));
+		return strategy.stringify(this.toObject())
 	}
 
-	public static parseFromFileSync(file: string, immutable: Boolean = false): Config {
-		const strategy = (strategy => new strategy())(Strategy.getStrategy(file));
+	public static async parseFromFile(path: string, immutable: Boolean = false): Promise<Config> {
+		const raw = await readFile(path);
+		return this.parse(raw, immutable, path);
+	}
 
-		return new Config(strategy.parse(readFileSync(file)), immutable);
+	public static parseFromFileSync(path: string, immutable: Boolean = false): Config {
+		const raw = readFileSync(path);
+		return this.parse(raw, immutable, path);
+	}
+	private static parse(raw: string | Buffer, immutable: Boolean, path?: string) {
+		const strategy = (strategy => new strategy())(Strategy.getStrategy(path));
+		return new Config(strategy.parse(raw), immutable, path);
 	}
 }
