@@ -4,7 +4,7 @@ const { readFile, writeFile } = promises;
 import Strategy from './strategy/Strategy.js';
 
 export default class Config {
-	private constructor(private config: NodeJS.Dict<any> = {}, private immutable: Boolean = false, private readonly path?: string) {
+	private constructor(private config: NodeJS.Dict<any> = {}, private immutable: boolean = false, private readonly path?: string) {
 		for (const key in config) {
 			const value = config[key];
 
@@ -90,16 +90,16 @@ export default class Config {
 		return strategy.stringify(this.toObject())
 	}
 
-	public static async parseFromFile(path: string, immutable: Boolean = false): Promise<Config> {
+	public static async parseFromFile(path: string, immutable: boolean = false): Promise<Config> {
 		const raw = await readFile(path);
 		return this.parse(raw, immutable, path);
 	}
 
-	public static parseFromFileSync(path: string, immutable: Boolean = false): Config {
+	public static parseFromFileSync(path: string, immutable: boolean = false): Config {
 		const raw = readFileSync(path);
 		return this.parse(raw, immutable, path);
 	}
-	private static parse(raw: string | Buffer, immutable: Boolean, path?: string) {
+	private static parse(raw: string | Buffer, immutable: boolean, path?: string) {
 		const strategy = (strategy => new strategy())(Strategy.getStrategy(path));
 		return new Config(strategy.parse(raw), immutable, path);
 	}
