@@ -4,16 +4,22 @@ const { readFile, writeFile } = promises;
 import Strategy from './strategy/Strategy.js';
 
 export default class Config {
-	private constructor(private config: NodeJS.Dict<any> = {}, private immutable: boolean = false, private readonly path?: string) {
+	public constructor(private config: NodeJS.Dict<any> = {}) {
 		for (const key in config) {
-			const value = config[key];
-
-			if (typeof value == "object" && !Array.isArray(value) && !(value instanceof Config)) {
-				config[key] = new Config(value, immutable);
-			}
+			config[key] = this.parseObject(config[key]);
 		}
 	}
 
+	private path: string;
+	private immutable: boolean = false
+
+	private parseObject(value: any) {
+		if (typeof value == "object" && !Array.isArray(value) && !(value instanceof Config)) {
+			const cfg = new Config(value)
+			value = cfg;
+		}
+		return value;
+	}
 	private toObject() {
 		const config = this.config;
 		const res = {}
@@ -48,6 +54,12 @@ export default class Config {
 		if (this.immutable)
 			throw new ReferenceError("Config immutable");
 
+		if (typeof value == "object" && !Array.isArray(value) && !(value instanceof Config)) {
+			const cfg = new Config(value)
+			value = cfg;
+
+		}
+
 		if (this.config.hasOwnProperty(key))
 			this.config[key] = value;
 		else if (key.indexOf(".") != -1) {
@@ -69,6 +81,13 @@ export default class Config {
 
 	public setImmutable() {
 		this.immutable = true;
+
+		for (const key in this.config) {
+			const value = this.config[key];
+			if (value instanceof Config)
+				value.setImmutable();
+		}
+
 		return this;
 	}
 	public getImmutable() {
@@ -90,6 +109,24 @@ export default class Config {
 		return strategy.stringify(this.toObject())
 	}
 
+	public async parseFromFile(path?: string) {
+		if (!path) path = this.path;
+		const raw = await readFile(path);
+		this.parse(raw, path);
+	}
+	public async parseFromFileSync(path?: string) {
+		if (!path) path = this.path;
+		const raw = readFileSync(path);
+		this.parse(raw, path);
+	}
+	private parse(raw: string | Buffer, path: string) {
+		if (this.immutable)
+			throw new ReferenceError("Config immutable");
+
+		const strategy = (strategy => new strategy())(Strategy.getStrategy(path));
+		this.config = this.parseObject(strategy.parse(raw));
+	}
+
 	public static async parseFromFile(path: string, immutable: boolean = false): Promise<Config> {
 		const raw = await readFile(path);
 		return this.parse(raw, immutable, path);
@@ -99,8 +136,11 @@ export default class Config {
 		const raw = readFileSync(path);
 		return this.parse(raw, immutable, path);
 	}
-	private static parse(raw: string | Buffer, immutable: boolean, path?: string) {
+	private static parse(raw: string | Buffer, immutable: boolean, path: string) {
 		const strategy = (strategy => new strategy())(Strategy.getStrategy(path));
-		return new Config(strategy.parse(raw), immutable, path);
+		const cfg = new Config(strategy.parse(raw))
+		cfg.immutable = immutable;
+		cfg.path = path;
+		return cfg;
 	}
 }
