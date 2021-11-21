@@ -1,6 +1,6 @@
 {
   "name": "simcfg",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A simple module for managing configuration files",
   "main": "dist/index.js",
   "repository": "https://github.com/80LK/simcfg",
