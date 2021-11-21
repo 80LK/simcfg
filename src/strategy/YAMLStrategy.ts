@@ -1,14 +1,9 @@
 import YAML from "yaml";
-import JSONStrategy from "./JSONStrategy.js";
+import Strategy from "./Strategy.js";
 
-class YAMLStrategy extends JSONStrategy {
+class YAMLStrategy extends Strategy {
 	public parse(raw: string | Buffer): Object {
-		let obj = YAML.parse(raw.toString());
-
-		if (typeof obj == "object" && !Array.isArray(obj))
-			obj = this.parseObj(obj);
-
-		return obj;
+		return YAML.parse(raw.toString());
 	}
 
 	public stringify(raw: Object): string {

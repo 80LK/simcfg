@@ -33,19 +33,6 @@ config.parseFromFile("test.json"); // Promise
 config.parseFromFileSync("test.json"); 
 ```
 
-**!!!ВАЖНО!!!**
-Следующая запись в конфиге бросит ошибку при чтении файла, из-за попытки перезаписи значения *a*.
-```json
-{
-	"a":1,
-	"a.b":2
-}
-```
-```yml
-a: 1
-a.b: 2
-```
-
 ### Получение значений
  Если значение не найдено и стандартное значение не указано. метод бросит ошибку.
 ```ts
@@ -63,6 +50,25 @@ config.get<number>("b", 10); // return 10
 config.get<string>("c.d", "defaultValue"); //return "defaultValue"
 config.get<boolean>("c.e", false);//return false
 config.get<number>("f");// throw Error
+```
+
+#### !!!ВАЖНО!!!
+При следующей записи конфига:
+```json
+{
+	"a": 1,
+	"a.b": 2
+}
+```
+```yml
+a: 1
+a.b: 2
+```
+невозможно получить поле *b* из *a*, как из объекта.
+```ts
+config.get("a.b"); //return 2
+config.get("a"); //return 1
+config.get("a").b // 1.b === undefined
 ```
 
 ### Изменение значений

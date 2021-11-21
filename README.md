@@ -65,6 +65,25 @@ config.get<boolean>("c.e", false);//return false
 config.get<number>("f");// throw Error
 ```
 
+#### !!!WARNING!!!
+With the following config entry:
+```json
+{
+	"a": 1,
+	"a.b": 2
+}
+```
+```yml
+a: 1
+a.b: 2
+```
+it is impossible to get the *b* field from *a* as from an object.
+```ts
+config.get("a.b"); //return 2
+config.get("a"); //return 1
+config.get("a").b // 1.b === undefined
+```
+
 ### Changing values
 If the config is immutable, the method will throw an error.
 ```ts
