@@ -16,11 +16,21 @@ npm i --save yaml
 
 ## Использование
 
+### Новый конфиг
+```ts
+const config = new Config();//Empty config
+const config = new Config({
+	a:1
+});// Config with a = 1
+```
+
 ### Чтение файла.
 ```ts
-const config:Config = await Config.parseFromFile("test.json");
-
+const config:Config = await Config.parseFromFile("test.json"); // Promise
 const config:Config = Config.parseFromFileSync("test.json");
+
+config.parseFromFile("test.json"); // Promise
+config.parseFromFileSync("test.json"); 
 ```
 
 **!!!ВАЖНО!!!**
