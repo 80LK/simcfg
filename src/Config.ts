@@ -60,9 +60,7 @@ export default class Config {
 
 		}
 
-		if (this.config.hasOwnProperty(key))
-			this.config[key] = value;
-		else if (key.indexOf(".") != -1) {
+		if (key.indexOf(".") != -1) {
 			const tree = key.split(".");
 			let newKey = tree[0];
 			let cfg = this.config[newKey];
@@ -74,6 +72,8 @@ export default class Config {
 				throw new ReferenceError("");
 
 			cfg.set(tree.slice(1).join("."), value);
+		} else {
+			this.config[key] = value;
 		}
 
 		return this;
