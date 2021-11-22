@@ -3,7 +3,13 @@ import JSONStrategy from './strategy/JSONStrategy.js';
 import Config from "./Config.js";
 
 Strategy.registerForFiles("json", JSONStrategy);
-Strategy.registerForFiles(["yaml", "yml"], YAMLStrategy);
+
+try {
+	require.resolve("yaml");
+	Strategy.registerForFiles(["yaml", "yml"], require("./strategy/YAMLStrategy.js").default)
+} catch (e) {
+	Strategy.refisterErrorForFiles(["yaml", "yml"], "Module YAML not installed.");
+}
 
 export default Config;
 export { Strategy }
